@@ -1,0 +1,49 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>testwebRTC</title>
+</head>
+<body>
+    <h1>WebSocket简易聊天室</h1>
+    <input type="text" id="sendMsg">
+    <button id="submitBtn">发送</button>
+</body>
+<script>
+    function showMessage(str, type) {
+        var divNode = document.createElement("div");
+        divNode.innerHTML = str;
+        if (type == 'enter') {
+            divNode.style.color = 'blue';
+        } else if (type == 'leave') {
+            divNode.style.color = "red";
+        }
+        document.body.appendChild(divNode);
+    }
+
+    var websocket = new WebSocket("ws://10.12.6.30:8080")
+
+    websocket.onopen = function () {
+        console.log("connect success")
+        document.getElementById("submitBtn").onclick = function () {
+            var text = document.getElementById("sendMsg").value;
+            if (text) {
+                websocket.send(text)
+            }
+        }
+    }
+
+    websocket.onclose = function () {
+        console.log("websocket close");
+    }
+
+    websocket.onmessage = function (e) {
+        console.log(e)
+        var message = JSON.parse(e.data)
+        showMessage(message.data, message.type);
+    }
+
+
+</script>
+</html>
